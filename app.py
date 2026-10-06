@@ -115,9 +115,8 @@ st.html("""
 # TRAINING DATA
 # ---------------------------------------------------------
 
-texts = [
-
-    # English
+# English
+english_texts = [
     "hello how are you",
     "good morning",
     "good evening",
@@ -127,9 +126,11 @@ texts = [
     "i love programming",
     "this is a beautiful day",
     "where are you going",
-    "have a nice day",
+    "have a nice day"
+]
 
-    # Tamil
+# Tamil
+tamil_texts = [
     "வணக்கம் எப்படி இருக்கிறீர்கள்",
     "நான் நன்றாக இருக்கிறேன்",
     "தமிழ் மொழி மிகவும் அழகானது",
@@ -139,9 +140,11 @@ texts = [
     "எனக்கு தமிழ் பிடிக்கும்",
     "இன்று நல்ல நாள்",
     "நீங்கள் எங்கு செல்கிறீர்கள்",
-    "நன்றி",
+    "நன்றி"
+]
 
-    # French
+# French
+french_texts = [
     "bonjour comment allez vous",
     "bonsoir",
     "comment allez vous aujourd'hui",
@@ -151,9 +154,11 @@ texts = [
     "j'aime programmer",
     "bonne journée",
     "merci beaucoup",
-    "au revoir",
+    "au revoir"
+]
 
-    # Spanish
+# Spanish
+spanish_texts = [
     "Contigo, siempre",
     "Te amo",
     "Mi amor",
@@ -168,7 +173,7 @@ texts = [
     "Amor de mi vida",
     "Almas gemelas",
     "Juntos para siempre",
-    "Hasta el fina",
+    "Hasta el final",
     "hola como estas",
     "buenos dias",
     "buenas tardes",
@@ -178,9 +183,11 @@ texts = [
     "me gusta programar",
     "que tengas un buen dia",
     "muchas gracias",
-    "hasta luego",
+    "hasta luego"
+]
 
-    # German
+# German
+german_texts = [
     "Für immer",
     "Für immer wir",
     "Nur wir zwei",
@@ -209,13 +216,28 @@ texts = [
     "auf wiedersehen"
 ]
 
-languages = (
-    ["English"] * 10 +
-    ["Tamil"] * 10 +
-    ["French"] * 10 +
-    ["Spanish"] * 10 +
-    ["German"] * 10
+# ---------------------------------------------------------
+# COMBINE TRAINING DATA
+# ---------------------------------------------------------
+
+texts = (
+    english_texts
+    + tamil_texts
+    + french_texts
+    + spanish_texts
+    + german_texts
 )
+
+languages = (
+    ["English"] * len(english_texts)
+    + ["Tamil"] * len(tamil_texts)
+    + ["French"] * len(french_texts)
+    + ["Spanish"] * len(spanish_texts)
+    + ["German"] * len(german_texts)
+)
+
+# Safety check
+assert len(texts) == len(languages)
 
 # ---------------------------------------------------------
 # NLP MODEL
@@ -242,6 +264,7 @@ with col1:
 
     st.html("""
     <div class="info-card">
+
         <h3>🧠 How does it work?</h3>
 
         <p>
@@ -255,6 +278,7 @@ with col1:
         <b>Multinomial Naive Bayes</b> is used for
         classification.
         </p>
+
     </div>
     """)
 
@@ -262,6 +286,7 @@ with col2:
 
     st.html("""
     <div class="info-card">
+
         <h3>⚡ NLP Pipeline</h3>
 
         <p>📝 Input Text</p>
@@ -271,6 +296,7 @@ with col2:
         <p>🤖 Naive Bayes</p>
         <p>↓</p>
         <p>🌐 Language Prediction</p>
+
     </div>
     """)
 
@@ -294,18 +320,25 @@ user_text = st.text_area(
 col1, col2, col3 = st.columns([1, 1, 3])
 
 with col1:
+
     detect = st.button(
         "🔍 Detect Language",
         use_container_width=True
     )
 
 with col2:
+
     clear = st.button(
         "🗑️ Clear",
         use_container_width=True
     )
 
+# ---------------------------------------------------------
+# CLEAR BUTTON
+# ---------------------------------------------------------
+
 if clear:
+    st.session_state["clear_text"] = True
     st.rerun()
 
 # ---------------------------------------------------------
@@ -314,7 +347,8 @@ if clear:
 
 if detect:
 
-    if user_text.strip() == "":
+    if not user_text.strip():
+
         st.warning("⚠️ Please enter some text.")
 
     else:
@@ -325,12 +359,16 @@ if detect:
         # Predict language
         prediction = model.predict(user_vector)[0]
 
-        # Get probability
+        # Get probabilities
         probabilities = model.predict_proba(user_vector)[0]
 
+        # Highest probability
         confidence = max(probabilities) * 100
 
-        # Result
+        # -------------------------------------------------
+        # RESULT
+        # -------------------------------------------------
+
         st.html(f"""
         <div class="result-card">
 
@@ -367,6 +405,7 @@ if detect:
                 (language, probability * 100)
             )
 
+        # Sort highest to lowest
         results.sort(
             key=lambda x: x[1],
             reverse=True
@@ -398,7 +437,13 @@ language_data = [
     ("🇩🇪", "German")
 ]
 
-columns = [col1, col2, col3, col4, col5]
+columns = [
+    col1,
+    col2,
+    col3,
+    col4,
+    col5
+]
 
 for column, (flag, language) in zip(
     columns,
